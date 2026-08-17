@@ -33,7 +33,6 @@ describe("公開ブログ", () => {
     );
   });
 
-
   it("不正な公開日時を保存しない", async () => {
     const article = await repository.createDraft({
       bodyMarkdown: "本文",
