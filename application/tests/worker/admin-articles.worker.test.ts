@@ -42,6 +42,13 @@ describe("管理用記事API", () => {
     );
 
     expect(publishResponse.status).toBe(200);
+    const published = (await publishResponse.json()) as {
+      article: { id: string; status: string };
+    };
+    expect(published.article).toMatchObject({
+      id: created.article.id,
+      status: "published",
+    });
   });
 
   it("異なるOriginからの更新を拒否する", async () => {

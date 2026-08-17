@@ -105,6 +105,9 @@ export class ArticleRepository {
     id: string,
     publishedAt = new Date().toISOString(),
   ): Promise<boolean> {
+    if (Number.isNaN(new Date(publishedAt).getTime())) {
+      throw new RangeError("公開日時が不正です");
+    }
     const now = new Date().toISOString();
     const result = await this.database
       .prepare(
