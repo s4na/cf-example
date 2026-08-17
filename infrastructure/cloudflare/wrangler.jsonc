@@ -6,13 +6,18 @@
   "assets": {
     "directory": "../../application/dist",
     "binding": "ASSETS",
-    "run_worker_first": ["/", "/articles/*", "/rss.xml", "/admin", "/admin/*", "/index.html", "/api/*"]
+    "run_worker_first": ["/", "/articles/*", "/rss.xml", "/admin", "/admin/*", "/index.html", "/api/*", "/media/*"]
   },
   "d1_databases": [
     {
       "binding": "DB",
       "database_name": "cf-example",
       "migrations_dir": "migrations"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "MEDIA"
     }
   ]
 }
