@@ -1,5 +1,6 @@
-import { Hono } from "hono";
+import { Hono, type Handler } from "hono";
 import { ArticleRepository } from "./articles/repository";
+import { requireAdmin, type AccessBindings } from "./auth/access";
 import {
   renderArticle,
   renderArticleList,
@@ -7,7 +8,7 @@ import {
   renderRss,
 } from "./public/html";
 
-type Bindings = {
+type Bindings = AccessBindings & {
   ASSETS: Fetcher;
   DB: D1Database;
 };
@@ -82,6 +83,31 @@ app.get("/rss.xml", async (context) => {
     },
   );
 });
+
+app.use("/admin", requireAdmin);
+app.use("/admin/*", requireAdmin);
+app.use("/index.html", requireAdmin);
+app.use("/api/admin/*", requireAdmin);
+
+const serveAdmin: Handler<{ Bindings: Bindings }> = async (context) => {
+  const url = new URL(context.req.url);
+  url.pathname = "/";
+  const response = await context.env.ASSETS.fetch(
+    new Request(url, context.req.raw),
+  );
+  const headers = new Headers(response.headers);
+  headers.set("Cache-Control", "no-store");
+  headers.set(
+    "Content-Security-Policy",
+    "default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self'; base-uri 'none'; frame-ancestors 'none'",
+  );
+  headers.set("X-Content-Type-Options", "nosniff");
+  return new Response(response.body, { headers, status: response.status });
+};
+
+app.get("/admin", serveAdmin);
+app.get("/admin/", (context) => context.redirect("/admin", 308));
+app.get("/index.html", serveAdmin);
 
 app.get("/api/health", (context) =>
   context.json({
