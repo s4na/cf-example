@@ -4,10 +4,10 @@ export function App() {
   return (
     <main class="shell">
       <header>
-        <p class="eyebrow">Personal blog</p>
-        <h1>{site.title}</h1>
+        <p class="eyebrow">Administration</p>
+        <h1>記事管理</h1>
       </header>
-      <p>{site.description}</p>
+      <p>{site.title}の記事を管理します。</p>
     </main>
   );
 }
