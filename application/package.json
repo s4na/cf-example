@@ -4,11 +4,14 @@
   "type": "module",
   "scripts": {
     "build": "vite build",
-    "check": "pnpm lint && pnpm format:check && pnpm typecheck && pnpm test && pnpm build",
+    "check": "pnpm lint && pnpm format:check && pnpm typecheck && pnpm test && pnpm cloudflare:check",
+    "cloudflare:check": "vite build && wrangler deploy --dry-run --config ../infrastructure/cloudflare/wrangler.jsonc --outdir ../.artifacts/worker",
     "dev": "vite",
     "format:check": "oxfmt --check .",
     "lint": "oxlint src tests vite.config.ts vitest.config.ts",
-    "test": "vitest run --coverage",
+    "test": "pnpm test:unit && pnpm test:worker",
+    "test:unit": "vitest run --coverage --config vitest.config.ts",
+    "test:worker": "vite build && vitest run --config vitest.worker.config.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -18,17 +21,18 @@
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "^1.18.0",
+    "@cloudflare/vitest-pool-workers": "^0.13.0",
     "@cloudflare/workers-types": "^5.0.0",
     "@preact/preset-vite": "^2.10.2",
     "@testing-library/jest-dom": "^6.8.0",
     "@testing-library/preact": "^3.2.4",
-    "@vitest/coverage-v8": "^3.2.4",
+    "@vitest/coverage-v8": "^4.0.0",
     "jsdom": "^26.1.0",
     "oxfmt": "^0.12.0",
     "oxlint": "^1.13.0",
     "typescript": "^5.9.2",
     "vite": "^7.1.2",
-    "vitest": "^3.2.4",
+    "vitest": "^4.0.0",
     "wrangler": "^4.30.0"
   }
 }
