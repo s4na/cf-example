@@ -31,3 +31,12 @@ pnpm --dir application exec wrangler d1 migrations apply cf-example \
   --remote \
   --config ../infrastructure/cloudflare/wrangler.jsonc
 ```
+
+## 管理画面の認証
+
+Cloudflare Accessで`/admin*`と`/api/admin/*`を保護し、次のWorker変数を設定します。
+
+- `CF_ACCESS_TEAM_DOMAIN`: `https://<team>.cloudflareaccess.com`
+- `CF_ACCESS_AUD`: Access ApplicationのAudience Tag
+
+Workerでも`Cf-Access-Jwt-Assertion`の署名、issuer、audienceを検証します。`ADMIN_AUTH_BYPASS`はテストランタイムだけに注入し、Wrangler設定や本番環境には設定しません。
