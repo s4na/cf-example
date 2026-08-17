@@ -77,6 +77,22 @@ export class ArticleRepository {
     return result.results.map(fromRow);
   }
 
+  async listPublishedMetadata(limit = 100): Promise<Article[]> {
+    const result = await this.database
+      .prepare(
+        `SELECT id, title, slug, '' AS body_markdown, status,
+                created_at, updated_at, published_at
+         FROM articles
+         WHERE status = 'published'
+         ORDER BY published_at DESC
+         LIMIT ?`,
+      )
+      .bind(limit)
+      .all<ArticleRow>();
+
+    return result.results.map(fromRow);
+  }
+
   async publish(
     id: string,
     publishedAt = new Date().toISOString(),
