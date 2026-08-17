@@ -9,6 +9,7 @@ export default defineConfig({
       reporter: ["text", "json-summary"],
     },
     environment: "jsdom",
+    exclude: ["tests/worker/**", "node_modules/**", "dist/**"],
     setupFiles: ["./tests/setup.ts"],
   },
 });
