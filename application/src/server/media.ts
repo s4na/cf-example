@@ -76,10 +76,7 @@ media.post("/", async (context) => {
     return context.json({ error: "不正な送信元です" }, 403);
   }
 
-  const rawBody = await readBodyWithLimit(
-    context.req.raw,
-    maxMultipartBytes,
-  );
+  const rawBody = await readBodyWithLimit(context.req.raw, maxMultipartBytes);
   if (!rawBody) {
     return context.json({ error: "アップロード容量が大きすぎます" }, 413);
   }
