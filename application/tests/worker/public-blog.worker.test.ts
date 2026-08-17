@@ -33,6 +33,38 @@ describe("公開ブログ", () => {
     );
   });
 
+
+  it("不正な公開日時を保存しない", async () => {
+    const article = await repository.createDraft({
+      bodyMarkdown: "本文",
+      slug: "invalid-date",
+      title: "日時テスト",
+    });
+
+    await expect(repository.publish(article.id, "invalid")).rejects.toThrow(
+      "公開日時が不正です",
+    );
+    expect(await repository.findPublishedBySlug(article.slug)).toBeNull();
+  });
+
+  it("RSSからXMLで禁止された制御文字を除去する", async () => {
+    const article = await repository.createDraft({
+      bodyMarkdown: "本文",
+      slug: "rss-control",
+      title: "RSS\u0000記事",
+    });
+    await repository.publish(article.id, "2026-08-17T00:00:00.000Z");
+
+    const response = await SELF.fetch(
+      new Request("https://example.com/rss.xml"),
+    );
+    const xml = await response.text();
+
+    expect(response.status).toBe(200);
+    expect(xml).toContain("<title>RSS記事</title>");
+    expect(xml).not.toContain("\u0000");
+  });
+
   it("存在しない記事には404を返す", async () => {
     const response = await SELF.fetch(
       new Request("https://example.com/articles/missing"),
