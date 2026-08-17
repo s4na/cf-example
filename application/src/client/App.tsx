@@ -226,12 +226,26 @@ export function App() {
     setPublishing(true);
     const action = current?.status === "published" ? "unpublish" : "publish";
     try {
-      await request(`/api/admin/articles/${currentId}/${action}`, {
-        body: "{}",
-        method: "POST",
-      });
-      setMessage(action === "publish" ? "公開しました" : "下書きに戻しました");
-      await loadArticles();
+      const result = await request<{ article: Article }>(
+        `/api/admin/articles/${currentId}/${action}`,
+        {
+          body: "{}",
+          method: "POST",
+        },
+      );
+      setArticles((previous) =>
+        previous.map((article) =>
+          article.id === result.article.id ? result.article : article,
+        ),
+      );
+      const successMessage =
+        action === "publish" ? "公開しました" : "下書きに戻しました";
+      setMessage(successMessage);
+      try {
+        await loadArticles();
+      } catch {
+        setMessage(`${successMessage}が、一覧を更新できませんでした`);
+      }
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "更新に失敗しました");
     } finally {
