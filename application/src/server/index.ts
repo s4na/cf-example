@@ -1,4 +1,5 @@
 import { Hono, type Handler } from "hono";
+import { adminArticles } from "./articles/admin-api";
 import { ArticleRepository } from "./articles/repository";
 import { requireAdmin, type AccessBindings } from "./auth/access";
 import {
@@ -108,6 +109,8 @@ const serveAdmin: Handler<{ Bindings: Bindings }> = async (context) => {
 app.get("/admin", serveAdmin);
 app.get("/admin/", (context) => context.redirect("/admin", 308));
 app.get("/index.html", serveAdmin);
+
+app.route("/api/admin/articles", adminArticles);
 
 app.get("/api/health", (context) =>
   context.json({
