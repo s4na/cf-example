@@ -359,7 +359,9 @@ export function App() {
           >
             {current?.status === "published" ? "非公開にする" : "公開する"}
           </button>
-          <output aria-live="polite">{message}</output>
+          <output role="status" aria-live="polite">
+            {message}
+          </output>
         </div>
       </section>
     </main>

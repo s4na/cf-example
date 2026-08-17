@@ -8,8 +8,10 @@
     "cloudflare:check": "vite build && wrangler deploy --dry-run --assets ./dist/client --config ../infrastructure/cloudflare/wrangler.jsonc --outdir ../.artifacts/worker",
     "dev": "vite",
     "format:check": "oxfmt --check .",
+    "e2e:serve": "CF_WRANGLER_CONFIG=../infrastructure/cloudflare/wrangler.e2e.jsonc vite --host 127.0.0.1",
     "lint": "oxlint src tests vite.config.ts vitest.config.ts",
     "test": "pnpm test:unit && pnpm test:worker",
+    "test:e2e": "playwright test",
     "test:unit": "vitest run --coverage --config vitest.config.ts",
     "test:worker": "vite build && vitest run --config vitest.worker.config.ts",
     "typecheck": "tsc --noEmit"
@@ -25,6 +27,7 @@
     "@cloudflare/vite-plugin": "^1.47.0",
     "@cloudflare/vitest-pool-workers": "^0.18.8",
     "@cloudflare/workers-types": "^5.0.0",
+    "@playwright/test": "^1.55.0",
     "@preact/preset-vite": "^2.10.2",
     "@types/node": "^24.3.0",
     "@testing-library/jest-dom": "^6.8.0",

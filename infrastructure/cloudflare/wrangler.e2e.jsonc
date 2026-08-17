@@ -1,0 +1,28 @@
+{
+  "$schema": "../../application/node_modules/wrangler/config-schema.json",
+  "name": "cf-example-e2e",
+  "main": "../../application/src/server/index.ts",
+  "compatibility_date": "2026-07-29",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": false,
+  "preview_urls": false,
+  "vars": {
+    "ADMIN_AUTH_BYPASS": "true"
+  },
+  "assets": {
+    "binding": "ASSETS",
+    "run_worker_first": ["/", "/articles/*", "/rss.xml", "/admin", "/admin/*", "/index.html", "/api/*", "/media/*"]
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "cf-example-e2e",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "MEDIA"
+    }
+  ]
+}

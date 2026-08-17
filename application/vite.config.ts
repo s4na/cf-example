@@ -6,7 +6,10 @@ export default defineConfig({
   plugins: [
     preact(),
     cloudflare({
-      configPath: "../infrastructure/cloudflare/wrangler.jsonc",
+      configPath:
+        process.env.CF_WRANGLER_CONFIG ??
+        "../infrastructure/cloudflare/wrangler.jsonc",
+      persistState: { path: "../.wrangler/state" },
     }),
   ],
 });

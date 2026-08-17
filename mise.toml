@@ -26,5 +26,8 @@ run = "pnpm --dir application typecheck"
 [tasks.test]
 run = "pnpm --dir application test"
 
+[tasks.test-e2e]
+run = "pnpm --dir application test:e2e"
+
 [tasks.check]
 depends = ["lint", "format-check", "typecheck", "test", "cloudflare-check"]
