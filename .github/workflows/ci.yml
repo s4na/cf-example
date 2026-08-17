@@ -17,7 +17,7 @@ jobs:
   check:
     name: Check
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
     steps:
       - name: Checkout
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
@@ -39,3 +39,9 @@ jobs:
 
       - name: Check
         run: pnpm check
+
+      - name: Install Chromium
+        run: pnpm --dir application exec playwright install --with-deps chromium
+
+      - name: End-to-end test
+        run: pnpm --dir application test:e2e
