@@ -36,10 +36,13 @@ export function App() {
   const [message, setMessage] = useState("");
   const [saving, setSaving] = useState(false);
   const [publishing, setPublishing] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const savingRef = useRef(false);
   const publishingRef = useRef(false);
+  const uploadInFlight = useRef(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const current = articles.find((article) => article.id === currentId);
-  const busy = saving || publishing;
+  const busy = saving || publishing || uploading;
 
   async function loadArticles() {
     const result = await request<{ articles: Article[] }>(
@@ -88,6 +91,94 @@ export function App() {
   ) {
     setInput((previous) => ({ ...previous, [key]: value }));
     setDirty(true);
+  }
+
+  function insertMarkdown(markdown: string) {
+    const textarea = textareaRef.current;
+    const start = textarea?.selectionStart ?? input.bodyMarkdown.length;
+    const end = textarea?.selectionEnd ?? start;
+    setInput((previous) => ({
+      ...previous,
+      bodyMarkdown: `${previous.bodyMarkdown.slice(0, start)}${markdown}${previous.bodyMarkdown.slice(end)}`,
+    }));
+    setDirty(true);
+    requestAnimationFrame(() => {
+      const position = start + markdown.length;
+      textareaRef.current?.setSelectionRange(position, position);
+      textareaRef.current?.focus();
+    });
+  }
+
+  async function uploadImage(file: File) {
+    if (uploadInFlight.current) return;
+    uploadInFlight.current = true;
+    setUploading(true);
+    setMessage("画像をアップロード中…");
+    try {
+      const form = new FormData();
+      form.set("image", file);
+      const response = await fetch("/api/admin/media", {
+        body: form,
+        method: "POST",
+      });
+      const body = (await response.json()) as { error?: string; url?: string };
+      if (!response.ok || !body.url) {
+        throw new Error(body.error ?? "画像のアップロードに失敗しました");
+      }
+      const alt = file.name
+        .replace(/\.[^.]+$/, "")
+        .replaceAll("\\", "\\\\")
+        .replaceAll("[", "\\[")
+        .replaceAll("]", "\\]");
+      insertMarkdown(`![${alt}](${body.url})`);
+      setMessage("画像を挿入しました");
+    } finally {
+      uploadInFlight.current = false;
+      setUploading(false);
+    }
+  }
+
+  async function uploadFirstImage(files: FileList | null) {
+    const file = files?.item(0);
+    if (!file) return;
+    try {
+      await uploadImage(file);
+    } catch (error) {
+      setMessage(
+        error instanceof Error
+          ? error.message
+          : "画像のアップロードに失敗しました",
+      );
+    }
+  }
+
+  function handleDragOver(event: DragEvent) {
+    const hasImage = Array.from(event.dataTransfer?.items ?? []).some(
+      (item) => item.kind === "file" && item.type.startsWith("image/"),
+    );
+    if (hasImage) event.preventDefault();
+  }
+
+  function handleDrop(event: DragEvent) {
+    const images = Array.from(event.dataTransfer?.files ?? []).filter((file) =>
+      file.type.startsWith("image/"),
+    );
+    if (images.length === 0) return;
+    event.preventDefault();
+    void uploadImage(images[0]).catch((error: Error) =>
+      setMessage(error.message),
+    );
+  }
+
+  function handlePaste(event: ClipboardEvent) {
+    const images = Array.from(event.clipboardData?.files ?? []).filter((file) =>
+      file.type.startsWith("image/"),
+    );
+    if (images.length === 0) return;
+    event.preventDefault();
+    void uploadImage(images[0]).catch((error: Error) =>
+      setMessage(error.message),
+    );
   }
 
   async function save() {
@@ -194,16 +285,33 @@ export function App() {
           />
         </label>
         <div class="editor-columns">
-          <label>
-            Markdown
+          <div class="markdown-field">
+            <label for="body-markdown">Markdown</label>
             <textarea
+              id="body-markdown"
+              ref={textareaRef}
               value={input.bodyMarkdown}
               disabled={busy}
+              onDragOver={handleDragOver}
+              onDrop={handleDrop}
               onInput={(event) =>
                 change("bodyMarkdown", event.currentTarget.value)
               }
+              onPaste={handlePaste}
             />
-          </label>
+            <label class="upload-label">
+              画像を追加
+              <input
+                type="file"
+                disabled={busy}
+                accept="image/jpeg,image/png,image/gif,image/webp"
+                onChange={(event) => {
+                  void uploadFirstImage(event.currentTarget.files);
+                  event.currentTarget.value = "";
+                }}
+              />
+            </label>
+          </div>
           <section class="preview" aria-label="プレビュー">
             <span>プレビュー</span>
             <div
