@@ -45,12 +45,16 @@ GitHub ActionsにはCloudflare認証情報を保存しません。CIと同じ検
 pnpm --dir application exec wrangler login
 pnpm --dir application exec wrangler whoami
 mise run check
-pnpm --dir application exec wrangler deploy --dry-run
+pnpm --dir application exec wrangler deploy --dry-run \
+  --assets ./dist/client \
+  --config ../infrastructure/cloudflare/wrangler.jsonc
 pnpm --dir application exec wrangler d1 migrations apply cf-example \
   --remote \
   --config ../infrastructure/cloudflare/wrangler.jsonc
 pnpm --dir application exec vite build
-pnpm --dir application exec wrangler deploy
+pnpm --dir application exec wrangler deploy \
+  --assets ./dist/client \
+  --config ../infrastructure/cloudflare/wrangler.jsonc
 curl --fail --show-error https://cf-example.<workers-subdomain>.workers.dev/api/health
 ```
 
@@ -59,8 +63,10 @@ curl --fail --show-error https://cf-example.<workers-subdomain>.workers.dev/api/
 ## ロールバック
 
 ```bash
-pnpm --dir application exec wrangler deployments list
-pnpm --dir application exec wrangler rollback
+pnpm --dir application exec wrangler deployments list \
+  --config ../infrastructure/cloudflare/wrangler.jsonc
+pnpm --dir application exec wrangler rollback \
+  --config ../infrastructure/cloudflare/wrangler.jsonc
 curl --fail --show-error https://cf-example.<workers-subdomain>.workers.dev/api/health
 ```
 
@@ -77,7 +83,8 @@ pnpm --dir application exec wrangler r2 bucket list
 pnpm --dir application exec wrangler d1 export cf-example \
   --remote \
   --output ./cf-example-backup.sql
-pnpm --dir application exec wrangler delete --name cf-example
+pnpm --dir application exec wrangler delete --name cf-example \
+  --config ../infrastructure/cloudflare/wrangler.jsonc
 ```
 
 関連するD1とR2が残っている場合は、一覧で確認した正確な名前を指定して個別に削除します。
