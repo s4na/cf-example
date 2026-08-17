@@ -9,7 +9,7 @@ export default defineConfig({
   plugins: [
     cloudflareTest(async () => ({
       miniflare: {
-        assets: { directory: "./dist" },
+        assets: { directory: "./dist/client" },
         bindings: {
           TEST_MIGRATIONS: await readD1Migrations(
             fileURLToPath(
