@@ -6,7 +6,7 @@
   "assets": {
     "directory": "../../application/dist",
     "binding": "ASSETS",
-    "run_worker_first": ["/api/*"]
+    "run_worker_first": ["/", "/articles/*", "/rss.xml", "/api/*"]
   },
   "d1_databases": [
     {
