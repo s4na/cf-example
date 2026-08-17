@@ -16,8 +16,6 @@
   },
   "dependencies": {
     "hono": "^4.10.0",
-    "jose": "^6.1.0",
-    "micromark": "^4.0.2",
     "preact": "^10.27.0",
     "valibot": "^1.1.0"
   },
@@ -25,8 +23,8 @@
     "@cloudflare/vite-plugin": "^1.47.0",
     "@cloudflare/vitest-pool-workers": "^0.18.8",
     "@cloudflare/workers-types": "^5.0.0",
-    "@preact/preset-vite": "^2.10.2",
     "@types/node": "^24.3.0",
+    "@preact/preset-vite": "^2.10.2",
     "@testing-library/jest-dom": "^6.8.0",
     "@testing-library/preact": "^3.2.4",
     "@vitest/coverage-v8": "^4.0.0",

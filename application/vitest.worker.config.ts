@@ -9,9 +9,8 @@ export default defineConfig({
   plugins: [
     cloudflareTest(async () => ({
       miniflare: {
-        assets: { directory: "./dist" },
+        assets: { directory: "./dist/client" },
         bindings: {
-          ADMIN_AUTH_BYPASS: "true",
           TEST_MIGRATIONS: await readD1Migrations(
             fileURLToPath(
               new URL(
