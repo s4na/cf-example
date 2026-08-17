@@ -56,6 +56,14 @@ export class ArticleRepository {
     return row ? fromRow(row) : null;
   }
 
+  async listAll(): Promise<Article[]> {
+    const result = await this.database
+      .prepare("SELECT * FROM articles ORDER BY updated_at DESC")
+      .all<ArticleRow>();
+
+    return result.results.map(fromRow);
+  }
+
   async findPublishedBySlug(slug: string): Promise<Article | null> {
     const row = await this.database
       .prepare("SELECT * FROM articles WHERE slug = ? AND status = 'published'")
@@ -108,5 +116,33 @@ export class ArticleRepository {
       .run();
 
     return result.meta.changes === 1;
+  }
+
+  async unpublish(id: string): Promise<boolean> {
+    const now = new Date().toISOString();
+    const result = await this.database
+      .prepare(
+        `UPDATE articles
+         SET status = 'draft', published_at = NULL, updated_at = ?
+         WHERE id = ?`,
+      )
+      .bind(now, id)
+      .run();
+
+    return result.meta.changes === 1;
+  }
+
+  async update(id: string, input: ArticleInput): Promise<Article | null> {
+    const now = new Date().toISOString();
+    const result = await this.database
+      .prepare(
+        `UPDATE articles
+         SET title = ?, slug = ?, body_markdown = ?, status = 'draft', published_at = NULL, updated_at = ?
+         WHERE id = ?`,
+      )
+      .bind(input.title, input.slug, input.bodyMarkdown, now, id)
+      .run();
+
+    return result.meta.changes === 1 ? this.findById(id) : null;
   }
 }
