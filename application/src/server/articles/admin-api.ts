@@ -89,19 +89,21 @@ adminArticles.put("/:id", async (context) => {
 });
 
 adminArticles.post("/:id/publish", async (context) => {
-  const updated = await new ArticleRepository(context.env.DB).publish(
-    context.req.param("id"),
-  );
-  return updated
-    ? context.json({ status: "published" })
-    : context.json({ error: "記事が見つかりません" }, 404);
+  const repository = new ArticleRepository(context.env.DB);
+  const id = context.req.param("id");
+  const updated = await repository.publish(id);
+  if (!updated) {
+    return context.json({ error: "記事が見つかりません" }, 404);
+  }
+  return context.json({ article: await repository.findById(id) });
 });
 
 adminArticles.post("/:id/unpublish", async (context) => {
-  const updated = await new ArticleRepository(context.env.DB).unpublish(
-    context.req.param("id"),
-  );
-  return updated
-    ? context.json({ status: "draft" })
-    : context.json({ error: "記事が見つかりません" }, 404);
+  const repository = new ArticleRepository(context.env.DB);
+  const id = context.req.param("id");
+  const updated = await repository.unpublish(id);
+  if (!updated) {
+    return context.json({ error: "記事が見つかりません" }, 404);
+  }
+  return context.json({ article: await repository.findById(id) });
 });
