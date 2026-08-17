@@ -1,0 +1,22 @@
+{
+  "name": "@cf-example/application",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite"
+  },
+  "dependencies": {
+    "hono": "^4.10.0",
+    "preact": "^10.27.0",
+    "valibot": "^1.1.0"
+  },
+  "devDependencies": {
+    "@cloudflare/vite-plugin": "^1.18.0",
+    "@cloudflare/workers-types": "^4.20260816.0",
+    "@preact/preset-vite": "^2.10.2",
+    "typescript": "^5.9.2",
+    "vite": "^7.1.2",
+    "wrangler": "^4.30.0"
+  }
+}
