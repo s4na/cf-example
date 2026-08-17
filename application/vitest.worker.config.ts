@@ -11,6 +11,7 @@ export default defineConfig({
       miniflare: {
         assets: { directory: "./dist" },
         bindings: {
+          ADMIN_AUTH_BYPASS: "true",
           TEST_MIGRATIONS: await readD1Migrations(
             fileURLToPath(
               new URL(
