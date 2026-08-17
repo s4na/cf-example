@@ -2,6 +2,7 @@ import { Hono, type Handler } from "hono";
 import { adminArticles } from "./articles/admin-api";
 import { ArticleRepository } from "./articles/repository";
 import { requireAdmin, type AccessBindings } from "./auth/access";
+import { media, serveMedia } from "./media";
 import {
   renderArticle,
   renderArticleList,
@@ -12,6 +13,7 @@ import {
 type Bindings = AccessBindings & {
   ASSETS: Fetcher;
   DB: D1Database;
+  MEDIA: R2Bucket;
 };
 
 const app = new Hono<{ Bindings: Bindings }>();
@@ -111,6 +113,14 @@ app.get("/admin/", (context) => context.redirect("/admin", 308));
 app.get("/index.html", serveAdmin);
 
 app.route("/api/admin/articles", adminArticles);
+app.route("/api/admin/media", media);
+
+app.get("/media/*", (context) =>
+  serveMedia(
+    context.env.MEDIA,
+    new URL(context.req.url).pathname.slice("/media/".length),
+  ),
+);
 
 app.get("/api/health", (context) =>
   context.json({

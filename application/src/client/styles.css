@@ -95,8 +95,17 @@ textarea {
   font-weight: 400;
 }
 
+.markdown-field,
 .editor-columns {
   display: grid;
+}
+
+.markdown-field {
+  align-content: stretch;
+  gap: 0.4rem;
+}
+
+.editor-columns {
   grid-template-columns: 1fr 1fr;
   gap: 1rem;
   min-height: 55vh;
@@ -141,3 +150,4 @@ output {
     min-height: 40vh;
   }
 }
+
