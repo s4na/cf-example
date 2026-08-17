@@ -32,7 +32,6 @@ describe("画像アップロード", () => {
     expect(imageResponse.headers.get("Content-Type")).toBe("image/png");
   });
 
-
   it("multipart解析前に過大なbodyを拒否する", async () => {
     const response = await SELF.fetch(
       new Request("https://example.com/api/admin/media", {
