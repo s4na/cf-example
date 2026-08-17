@@ -4,6 +4,9 @@ import { defineConfig } from "vitest/config";
 export default defineConfig({
   plugins: [
     cloudflareTest({
+      miniflare: {
+        assets: { directory: "./dist" },
+      },
       wrangler: {
         configPath: "../infrastructure/cloudflare/wrangler.jsonc",
       },
