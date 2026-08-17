@@ -40,3 +40,7 @@ Cloudflare Accessで`/admin*`と`/api/admin/*`を保護し、次のWorker変数�
 - `CF_ACCESS_AUD`: Access ApplicationのAudience Tag
 
 Workerでも`Cf-Access-Jwt-Assertion`の署名、issuer、audienceを検証します。`ADMIN_AUTH_BYPASS`はテストランタイムだけに注入し、Wrangler設定や本番環境には設定しません。
+
+## R2
+
+`MEDIA` BindingもWranglerの自動プロビジョニング対象です。本文画像は5MB以下のJPEG、PNG、GIF、WebPに限定し、ファイル内容を検査してからR2へ保存します。
