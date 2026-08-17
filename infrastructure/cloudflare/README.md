@@ -11,3 +11,23 @@ mise run cloudflare-check
 ```
 
 `wrangler deploy --temporary`は一時アカウントのClaim URLを出力するため、公開リポジトリのCIでは使用しません。
+
+## D1
+
+BindingにはWranglerの自動プロビジョニングを使用します。初回の認証済みデプロイで`cf-example`データベースが作成され、IDが設定ファイルへ書き戻されます。
+
+ローカルDBへマイグレーションを適用する場合は次を実行します。
+
+```bash
+pnpm --dir application exec wrangler d1 migrations apply cf-example \
+  --local \
+  --config ../infrastructure/cloudflare/wrangler.jsonc
+```
+
+初回デプロイでデータベースを作成した後、本番DBにもマイグレーションを適用します。
+
+```bash
+pnpm --dir application exec wrangler d1 migrations apply cf-example \
+  --remote \
+  --config ../infrastructure/cloudflare/wrangler.jsonc
+```

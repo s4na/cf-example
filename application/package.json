@@ -20,9 +20,10 @@
     "valibot": "^1.1.0"
   },
   "devDependencies": {
-    "@cloudflare/vite-plugin": "^1.18.0",
-    "@cloudflare/vitest-pool-workers": "^0.13.0",
+    "@cloudflare/vite-plugin": "^1.47.0",
+    "@cloudflare/vitest-pool-workers": "^0.18.8",
     "@cloudflare/workers-types": "^5.0.0",
+    "@types/node": "^24.3.0",
     "@preact/preset-vite": "^2.10.2",
     "@testing-library/jest-dom": "^6.8.0",
     "@testing-library/preact": "^3.2.4",
@@ -33,6 +34,6 @@
     "typescript": "^5.9.2",
     "vite": "^7.1.2",
     "vitest": "^4.0.0",
-    "wrangler": "^4.30.0"
+    "wrangler": "^4.114.0"
   }
 }

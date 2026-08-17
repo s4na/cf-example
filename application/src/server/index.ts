@@ -2,6 +2,7 @@ import { Hono } from "hono";
 
 type Bindings = {
   ASSETS: Fetcher;
+  DB: D1Database;
 };
 
 const app = new Hono<{ Bindings: Bindings }>();
