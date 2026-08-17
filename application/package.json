@@ -13,7 +13,7 @@
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "^1.18.0",
-    "@cloudflare/workers-types": "^4.20260816.0",
+    "@cloudflare/workers-types": "^5.20260817.1",
     "@preact/preset-vite": "^2.10.2",
     "typescript": "^5.9.2",
     "vite": "^7.1.2",
