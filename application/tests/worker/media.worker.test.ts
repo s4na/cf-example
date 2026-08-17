@@ -32,6 +32,21 @@ describe("画像アップロード", () => {
     expect(imageResponse.headers.get("Content-Type")).toBe("image/png");
   });
 
+  it("multipart解析前に過大なbodyを拒否する", async () => {
+    const response = await SELF.fetch(
+      new Request("https://example.com/api/admin/media", {
+        body: new Uint8Array(5 * 1024 * 1024 + 64 * 1024 + 1),
+        headers: {
+          "Content-Type": "multipart/form-data; boundary=test",
+          Origin: "https://example.com",
+        },
+        method: "POST",
+      }),
+    );
+
+    expect(response.status).toBe(413);
+  });
+
   it("PNG署名の短い接頭辞を拒否する", async () => {
     const form = new FormData();
     form.set(
