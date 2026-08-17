@@ -10,9 +10,9 @@ const maxMultipartBytes = maxImageBytes + 64 * 1024;
 async function readBodyWithLimit(
   request: Request,
   limit: number,
-): Promise<Uint8Array | null> {
+): Promise<ArrayBuffer | null> {
   const reader = request.body?.getReader();
-  if (!reader) return new Uint8Array();
+  if (!reader) return new ArrayBuffer(0);
 
   const chunks: Uint8Array[] = [];
   let total = 0;
@@ -34,7 +34,7 @@ async function readBodyWithLimit(
     body.set(chunk, offset);
     offset += chunk.byteLength;
   }
-  return body;
+  return body.buffer;
 }
 
 const imageTypes = {
