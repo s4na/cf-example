@@ -1,0 +1,103 @@
+:root {
+  color: #111;
+  background: #fff;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  line-height: 1.75;
+}
+
+body {
+  margin: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+
+.site-header,
+main,
+footer {
+  width: min(42rem, calc(100% - 2rem));
+  margin-inline: auto;
+}
+
+.site-header {
+  padding-block: 1.5rem;
+  border-bottom: 1px solid #111;
+  font-weight: 700;
+}
+
+main {
+  min-height: 70vh;
+  padding-block: 4rem;
+}
+
+.hero {
+  margin-bottom: 5rem;
+}
+
+.eyebrow {
+  margin: 0;
+  color: #555;
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin: 0.25rem 0 1.5rem;
+  font-size: clamp(2.5rem, 8vw, 4.5rem);
+  line-height: 1.08;
+}
+
+h2 {
+  margin-top: 3rem;
+}
+
+.article-list {
+  padding: 0;
+  list-style: none;
+}
+
+.article-list li {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 1rem;
+  padding-block: 1rem;
+  border-top: 1px solid #ddd;
+}
+
+time {
+  color: #555;
+  font-size: 0.875rem;
+}
+
+.article-header {
+  margin-bottom: 3rem;
+}
+
+.prose img {
+  max-width: 100%;
+  height: auto;
+}
+
+.prose pre {
+  overflow-x: auto;
+  padding: 1rem;
+  border: 1px solid #111;
+}
+
+footer {
+  padding-block: 2rem;
+  border-top: 1px solid #111;
+  color: #555;
+  font-size: 0.875rem;
+}
+
+@media (max-width: 34rem) {
+  .article-list li {
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
+  }
+}
