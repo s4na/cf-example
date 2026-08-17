@@ -1,0 +1,12 @@
+[tools]
+node = "24.19.0"
+pnpm = "11.19.0"
+
+[tasks.install]
+run = "pnpm install --frozen-lockfile=false"
+
+[tasks.dev]
+run = "pnpm --dir application dev"
+
+[tasks.build]
+run = "pnpm --dir application build"

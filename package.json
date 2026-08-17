@@ -1,0 +1,9 @@
+{
+  "name": "cf-example",
+  "private": true,
+  "packageManager": "pnpm@11.19.0",
+  "scripts": {
+    "build": "pnpm --dir application build",
+    "dev": "pnpm --dir application dev"
+  }
+}
