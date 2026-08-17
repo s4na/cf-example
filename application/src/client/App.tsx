@@ -39,16 +39,25 @@ export function App() {
   const [uploading, setUploading] = useState(false);
   const savingRef = useRef(false);
   const publishingRef = useRef(false);
+  const articleLoadSequenceRef = useRef(0);
   const uploadInFlight = useRef(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const current = articles.find((article) => article.id === currentId);
   const busy = saving || publishing || uploading;
 
-  async function loadArticles() {
-    const result = await request<{ articles: Article[] }>(
-      "/api/admin/articles",
-    );
-    setArticles(result.articles);
+  async function loadArticles(): Promise<boolean> {
+    const sequence = ++articleLoadSequenceRef.current;
+    try {
+      const result = await request<{ articles: Article[] }>(
+        "/api/admin/articles",
+      );
+      if (sequence !== articleLoadSequenceRef.current) return false;
+      setArticles(result.articles);
+      return true;
+    } catch (error) {
+      if (sequence !== articleLoadSequenceRef.current) return false;
+      throw error;
+    }
   }
 
   useEffect(() => {
