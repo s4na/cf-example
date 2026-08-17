@@ -35,8 +35,11 @@ export function App() {
   const [dirty, setDirty] = useState(false);
   const [message, setMessage] = useState("");
   const [saving, setSaving] = useState(false);
+  const [publishing, setPublishing] = useState(false);
   const savingRef = useRef(false);
+  const publishingRef = useRef(false);
   const current = articles.find((article) => article.id === currentId);
+  const busy = saving || publishing;
 
   async function loadArticles() {
     const result = await request<{ articles: Article[] }>(
@@ -58,7 +61,7 @@ export function App() {
   }, [dirty]);
 
   function choose(article: Article) {
-    if (saving) return;
+    if (busy) return;
     if (dirty && !window.confirm("未保存の変更を破棄しますか？")) return;
     setCurrentId(article.id);
     setInput({
@@ -71,7 +74,7 @@ export function App() {
   }
 
   function newArticle() {
-    if (saving) return;
+    if (busy) return;
     if (dirty && !window.confirm("未保存の変更を破棄しますか？")) return;
     setCurrentId(null);
     setInput(emptyArticle);
@@ -106,6 +109,10 @@ export function App() {
             method: "POST",
           });
       setCurrentId(result.article.id);
+      setArticles((previous) => [
+        result.article,
+        ...previous.filter((article) => article.id !== result.article.id),
+      ]);
       setDirty(false);
       setMessage("保存しました");
 
@@ -123,7 +130,9 @@ export function App() {
   }
 
   async function togglePublish() {
-    if (!currentId || dirty) return;
+    if (publishingRef.current || !currentId || dirty) return;
+    publishingRef.current = true;
+    setPublishing(true);
     const action = current?.status === "published" ? "unpublish" : "publish";
     try {
       await request(`/api/admin/articles/${currentId}/${action}`, {
@@ -134,6 +143,9 @@ export function App() {
       await loadArticles();
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "更新に失敗しました");
+    } finally {
+      publishingRef.current = false;
+      setPublishing(false);
     }
   }
 
@@ -142,7 +154,7 @@ export function App() {
       <aside>
         <div class="aside-header">
           <h1>記事</h1>
-          <button type="button" onClick={newArticle} disabled={saving}>
+          <button type="button" onClick={newArticle} disabled={busy}>
             新規
           </button>
         </div>
@@ -152,7 +164,7 @@ export function App() {
               <button
                 type="button"
                 onClick={() => choose(article)}
-                disabled={saving}
+                disabled={busy}
               >
                 <strong>{article.title}</strong>
                 <span>
@@ -169,7 +181,7 @@ export function App() {
           タイトル
           <input
             value={input.title}
-            disabled={saving}
+            disabled={busy}
             onInput={(event) => change("title", event.currentTarget.value)}
           />
         </label>
@@ -177,7 +189,7 @@ export function App() {
           slug
           <input
             value={input.slug}
-            disabled={saving}
+            disabled={busy}
             onInput={(event) => change("slug", event.currentTarget.value)}
           />
         </label>
@@ -186,7 +198,7 @@ export function App() {
             Markdown
             <textarea
               value={input.bodyMarkdown}
-              disabled={saving}
+              disabled={busy}
               onInput={(event) =>
                 change("bodyMarkdown", event.currentTarget.value)
               }
@@ -205,14 +217,14 @@ export function App() {
           <button
             type="button"
             onClick={() => void save()}
-            disabled={saving || (!dirty && currentId !== null)}
+            disabled={busy || (!dirty && currentId !== null)}
           >
             下書きを保存
           </button>
           <button
             type="button"
             onClick={() => void togglePublish()}
-            disabled={saving || !currentId || dirty}
+            disabled={busy || !currentId || dirty}
           >
             {current?.status === "published" ? "非公開にする" : "公開する"}
           </button>
