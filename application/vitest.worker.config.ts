@@ -1,3 +1,4 @@
+import { fileURLToPath } from "node:url";
 import {
   cloudflareTest,
   readD1Migrations,
@@ -8,11 +9,15 @@ export default defineConfig({
   plugins: [
     cloudflareTest(async () => ({
       miniflare: {
-        assets: { directory: "./dist" },
+        assets: { directory: "./dist/client" },
         bindings: {
           TEST_MIGRATIONS: await readD1Migrations(
-            new URL("../infrastructure/cloudflare/migrations", import.meta.url)
-              .pathname,
+            fileURLToPath(
+              new URL(
+                "../infrastructure/cloudflare/migrations",
+                import.meta.url,
+              ),
+            ),
           ),
         },
       },
