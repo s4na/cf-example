@@ -15,11 +15,40 @@ function escapeHtml(value: string): string {
   });
 }
 
-function formatDate(value: string): string {
-  return new Intl.DateTimeFormat("ja-JP", {
-    dateStyle: "long",
-    timeZone: "Asia/Tokyo",
-  }).format(new Date(value));
+const dateFormatter = new Intl.DateTimeFormat("ja-JP", {
+  dateStyle: "long",
+  timeZone: "Asia/Tokyo",
+});
+
+function formatDate(value: string): string | null {
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? null : dateFormatter.format(date);
+}
+
+function renderPublishedTime(value: string | null): string {
+  if (!value) return "";
+  const formatted = formatDate(value);
+  return formatted
+    ? `<time datetime="${escapeHtml(value)}">${formatted}</time>`
+    : "";
+}
+
+function escapeXml(value: string): string {
+  const validXml = Array.from(value)
+    .filter((character) => {
+      const codePoint = character.codePointAt(0);
+      return (
+        codePoint === 0x09 ||
+        codePoint === 0x0a ||
+        codePoint === 0x0d ||
+        (codePoint !== undefined &&
+          ((codePoint >= 0x20 && codePoint <= 0xd7ff) ||
+            (codePoint >= 0xe000 && codePoint <= 0xfffd) ||
+            (codePoint >= 0x10000 && codePoint <= 0x10ffff)))
+      );
+    })
+    .join("");
+  return escapeHtml(validXml);
 }
 
 export function renderLayout(options: {
@@ -59,7 +88,7 @@ export function renderArticleList(articles: Article[]): string {
     .map(
       (article) => `<li>
         <a href="/articles/${encodeURIComponent(article.slug)}">${escapeHtml(article.title)}</a>
-        ${article.publishedAt ? `<time datetime="${article.publishedAt}">${formatDate(article.publishedAt)}</time>` : ""}
+        ${renderPublishedTime(article.publishedAt)}
       </li>`,
     )
     .join("");
@@ -76,9 +105,7 @@ export function renderArticleList(articles: Article[]): string {
 }
 
 export function renderArticle(article: Article): string {
-  const published = article.publishedAt
-    ? `<time datetime="${article.publishedAt}">${formatDate(article.publishedAt)}</time>`
-    : "";
+  const published = renderPublishedTime(article.publishedAt);
 
   return `<article>
     <header class="article-header">
@@ -94,19 +121,19 @@ export function renderRss(articles: Article[], origin: string): string {
     .map((article) => {
       const url = `${origin}/articles/${encodeURIComponent(article.slug)}`;
       return `<item>
-        <title>${escapeHtml(article.title)}</title>
-        <link>${escapeHtml(url)}</link>
-        <guid>${escapeHtml(url)}</guid>
-        ${article.publishedAt ? `<pubDate>${new Date(article.publishedAt).toUTCString()}</pubDate>` : ""}
+        <title>${escapeXml(article.title)}</title>
+        <link>${escapeXml(url)}</link>
+        <guid>${escapeXml(url)}</guid>
+        ${article.publishedAt && formatDate(article.publishedAt) ? `<pubDate>${new Date(article.publishedAt).toUTCString()}</pubDate>` : ""}
       </item>`;
     })
     .join("");
 
   return `<?xml version="1.0" encoding="UTF-8" ?>
 <rss version="2.0"><channel>
-  <title>${site.title}</title>
-  <link>${escapeHtml(origin)}</link>
-  <description>${site.description}</description>
+  <title>${escapeXml(site.title)}</title>
+  <link>${escapeXml(origin)}</link>
+  <description>${escapeXml(site.description)}</description>
   ${items}
 </channel></rss>`;
 }

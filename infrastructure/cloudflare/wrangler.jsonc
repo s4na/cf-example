@@ -1,12 +1,11 @@
 {
-  "$schema": "node_modules/wrangler/config-schema.json",
+  "$schema": "../../application/node_modules/wrangler/config-schema.json",
   "name": "cf-example",
   "main": "../../application/src/server/index.ts",
   "compatibility_date": "2026-07-29",
   "assets": {
-    "directory": "../../application/dist",
     "binding": "ASSETS",
-    "run_worker_first": ["/", "/articles/*", "/rss.xml", "/admin", "/admin/*", "/index.html", "/api/*"]
+    "run_worker_first": ["/api/*"]
   },
   "d1_databases": [
     {
