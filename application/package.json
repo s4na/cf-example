@@ -16,6 +16,8 @@
   },
   "dependencies": {
     "hono": "^4.10.0",
+    "jose": "^6.1.0",
+    "micromark": "^4.0.2",
     "preact": "^10.27.0",
     "valibot": "^1.1.0"
   },
