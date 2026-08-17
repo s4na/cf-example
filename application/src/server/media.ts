@@ -5,6 +5,37 @@ type Bindings = {
 };
 
 const maxImageBytes = 5 * 1024 * 1024;
+const maxMultipartBytes = maxImageBytes + 64 * 1024;
+
+async function readBodyWithLimit(
+  request: Request,
+  limit: number,
+): Promise<Uint8Array | null> {
+  const reader = request.body?.getReader();
+  if (!reader) return new Uint8Array();
+
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+
+    total += value.byteLength;
+    if (total > limit) {
+      await reader.cancel();
+      return null;
+    }
+    chunks.push(value);
+  }
+
+  const body = new Uint8Array(total);
+  let offset = 0;
+  for (const chunk of chunks) {
+    body.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  return body;
+}
 
 const imageTypes = {
   "image/gif": {
@@ -45,8 +76,26 @@ media.post("/", async (context) => {
     return context.json({ error: "不正な送信元です" }, 403);
   }
 
-  const body = await context.req.parseBody();
-  const file = body.image;
+  const rawBody = await readBodyWithLimit(
+    context.req.raw,
+    maxMultipartBytes,
+  );
+  if (!rawBody) {
+    return context.json({ error: "アップロード容量が大きすぎます" }, 413);
+  }
+
+  let form: FormData;
+  try {
+    form = await new Request(context.req.url, {
+      body: rawBody,
+      headers: context.req.raw.headers,
+      method: "POST",
+    }).formData();
+  } catch {
+    return context.json({ error: "画像データを読み取れませんでした" }, 400);
+  }
+
+  const file = form.get("image");
   if (!(file instanceof File)) {
     return context.json({ error: "画像を選択してください" }, 400);
   }
