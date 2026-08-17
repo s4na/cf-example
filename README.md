@@ -24,3 +24,9 @@ mise run dev
 ```bash
 mise run build
 ```
+
+lint、型チェック、テスト、ビルドは一括で実行できます。
+
+```bash
+mise run check
+```
