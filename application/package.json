@@ -5,7 +5,7 @@
   "scripts": {
     "build": "vite build",
     "check": "pnpm lint && pnpm format:check && pnpm typecheck && pnpm test && pnpm cloudflare:check",
-    "cloudflare:check": "vite build && wrangler deploy --dry-run --config ../infrastructure/cloudflare/wrangler.jsonc --outdir ../.artifacts/worker",
+    "cloudflare:check": "vite build && wrangler deploy --dry-run --assets ./dist/client --config ../infrastructure/cloudflare/wrangler.jsonc --outdir ../.artifacts/worker",
     "dev": "vite",
     "format:check": "oxfmt --check .",
     "lint": "oxlint src tests vite.config.ts vitest.config.ts",
