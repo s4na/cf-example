@@ -11,6 +11,9 @@ run = "pnpm --dir application dev"
 [tasks.build]
 run = "pnpm --dir application build"
 
+[tasks.cloudflare-check]
+run = "pnpm --dir application cloudflare:check"
+
 [tasks.lint]
 run = "pnpm --dir application lint"
 
@@ -24,4 +27,4 @@ run = "pnpm --dir application typecheck"
 run = "pnpm --dir application test"
 
 [tasks.check]
-depends = ["lint", "format-check", "typecheck", "test", "build"]
+depends = ["lint", "format-check", "typecheck", "test", "cloudflare-check"]
